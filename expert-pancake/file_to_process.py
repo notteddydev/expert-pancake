@@ -2,6 +2,7 @@ import os
 import re
 import time
 
+from curlywaffle.main import get_unique_file_path
 from shutil import move
 
 # Regex pattern matching date format: 'yyyy-MM-dd' (more or less; it matches strings such as '2020-02-31' which is obviously incorrect)
@@ -18,7 +19,7 @@ class FileToProcess:
     @property
     def new_path(self):
         new_path = f"{self.dest}/{self.year}/{self.filetype}/{self.basename}"
-        return new_path        
+        return get_unique_file_path(new_path)
 
     @property
     def year(self):
