@@ -31,14 +31,7 @@ exts_to_filetypes = {ext: file_type for file_type, exts in filetypes_and_their_e
 filetypes = filetypes_and_their_exts.keys()
 exts = [ext for exts in filetypes_and_their_exts.values() for ext in exts]
 
-# Can I rename files prefixing them with the modification date before moving them?
-
-# !!!!!!!!!!!! MAKE SURE YOU DO NOT OVERWRITE ANY EXISTING FILES / DIRS. TEST THIS LOCALLY
-# BEFORE TESTING ON USB !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 paths_to_trash = set()
-# Move all files to the base dir (folder_to_process).
-# Add any directories to the paths_to_trash set.
 for file_path in folder_to_process.rglob("*"):
     if os.path.isdir(file_path):
         paths_to_trash.add(file_path)
