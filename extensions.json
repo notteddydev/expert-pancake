@@ -1,0 +1,16 @@
+{
+    "documents": [
+        ".pdf"
+    ],
+    "photos": [
+        ".jpg",
+        ".png"
+    ],
+    "recordings": [
+        ".mp3"
+    ],
+    "videos": [
+        ".mov",
+        ".mp4"
+    ]
+}
