@@ -3,7 +3,6 @@ import pathlib
 
 from dotenv import load_dotenv
 from send2trash import send2trash
-from shutil import move
 from tkinter.filedialog import askdirectory
 
 from file_to_process import FileToProcess
@@ -43,4 +42,4 @@ for file_path in folder_to_process.rglob("*"):
         original_path=file_path
     )
         
-    print(ftp.new_filepath)
+    print(ftp.new_path)
