@@ -2,6 +2,8 @@ import os
 import re
 import time
 
+from shutil import move
+
 # Regex pattern matching date format: 'yyyy-MM-dd' (more or less; it matches strings such as '2020-02-31' which is obviously incorrect)
 pattern = r'^(?P<year>\d{4})-(0[0-9]|1[0-2]|00)-(0[0-9]|[12][0-9]|3[01]|00)'
 
@@ -14,9 +16,9 @@ class FileToProcess:
         self.original_path = original_path
     
     @property
-    def new_filepath(self):
-        new_filepath = f"{self.dest}/{self.year}/{self.filetype}/{self.basename}"
-        return new_filepath        
+    def new_path(self):
+        new_path = f"{self.dest}/{self.year}/{self.filetype}/{self.basename}"
+        return new_path        
 
     @property
     def year(self):
@@ -30,3 +32,6 @@ class FileToProcess:
         modified_datetime_object = time.strptime(modified_timestamp)
 
         return time.strftime("%Y", modified_datetime_object)
+    
+    def move(self):
+        return move(self.original_path, self.new_path)
