@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 python-dotenv = "*"
 send2trash = "*"
+curlywaffle = {git = "git+https://github.com/notteddydev/curly-waffle.git#egg=curlywaffle"}
 
 [dev-packages]
 
