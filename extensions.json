@@ -3,6 +3,7 @@
         ".pdf"
     ],
     "photos": [
+        ".jpeg",
         ".jpg",
         ".png"
     ],
