@@ -30,16 +30,24 @@ exts_to_filetypes = {ext: file_type for file_type, exts in filetypes_and_their_e
 filetypes = filetypes_and_their_exts.keys()
 exts = [ext for exts in filetypes_and_their_exts.values() for ext in exts]
 
+
 paths_to_trash = set()
-for file_path in folder_to_process.rglob("*"):
-    if os.path.isdir(file_path):
-        paths_to_trash.add(file_path)
+for filepath in folder_to_process.rglob("*"):
+    if os.path.isdir(filepath):
+        paths_to_trash.add(filepath)
         continue
 
     ftp = FileToProcess(
         dest=destination_dir,
         exts_to_filetypes=exts_to_filetypes,
-        original_path=file_path
+        og_path=filepath
     )
-        
-    print(ftp.new_path)
+
+    ftp.create_dirs()
+    new_filepath = ftp.move()
+    print(f"{ftp.og_path} -> {new_filepath}")
+
+
+for path_to_trash in paths_to_trash:
+    if os.path.isdir(path_to_trash) and not len(os.listdir(path_to_trash)):
+        send2trash(path_to_trash)
