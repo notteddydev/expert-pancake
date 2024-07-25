@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ffb0bd4fc919acd502b696ac86194d048379b83863d46c3aec0758c0ec748a71"
+            "sha256": "2482028e144a3282726414e7a081aa6caff5094e802c7a494c9f6ffe97efcc72"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -17,8 +17,8 @@
     },
     "default": {
         "curlywaffle": {
-            "git": "git+https://github.com/notteddydev/curly-waffle.git#egg=curlywaffle",
-            "ref": "e248b8802c8a51e2cee8782c27757b94a47bb727"
+            "git": "git+https://github.com/notteddydev/curly-waffle.git",
+            "ref": "622eb2a785075b76b44bb4d9bc3ccb3655b0626e"
         },
         "python-dotenv": {
             "hashes": [
