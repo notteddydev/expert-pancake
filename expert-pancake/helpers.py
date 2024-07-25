@@ -3,6 +3,7 @@ import os
 
 from pathlib import Path
 
+
 def request_filetype_for_ext(ext, filepaths_with_ext, filetypes):
     print(f"Please specify to which type the ext: '{ext}' belongs by typing in the corresponding number. Files for that ext are listed below:")
     print("\n".join(filepaths_with_ext))
@@ -23,6 +24,7 @@ def request_filetype_for_ext(ext, filepaths_with_ext, filetypes):
     print("\nPlease try again.\n")
 
     return request_filetype_for_ext(ext, filepaths_with_ext, filetypes)
+
 
 def get_up_to_date_filetypes_and_their_exts(folder_to_process):
     base_dir = Path(__file__).resolve().parent.parent
