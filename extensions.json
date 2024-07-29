@@ -5,7 +5,8 @@
     "photos": [
         ".jpeg",
         ".jpg",
-        ".png"
+        ".png",
+        ".webp"
     ],
     "recordings": [
         ".mp3"
