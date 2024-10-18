@@ -1,6 +1,5 @@
 import json
 import os
-
 from pathlib import Path
 from settings import EXT_MAPPINGS_FILE
 from typing import List

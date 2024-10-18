@@ -1,11 +1,9 @@
 import os
 import re
 import time
-
 from curlywaffle.main import get_unique_file_path
-from shutil import move
-
 from settings import FILETYPES_FOR_YMDHMS_NAMING, YMD_PATTERN, YMDHMS_PATTERN
+from shutil import move
 
 
 class FileToProcess:

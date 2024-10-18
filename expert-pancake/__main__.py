@@ -5,15 +5,12 @@ destination under the folder structure:
 """
 
 import argparse
+import functions
 import os
-
 from dotenv import load_dotenv
+from file_to_process import FileToProcess
 from pathlib import Path
 from send2trash import send2trash
-
-import functions
-
-from file_to_process import FileToProcess
 
 load_dotenv()
 
