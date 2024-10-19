@@ -67,7 +67,7 @@ for filepath in args.origin.rglob("*"):
         og_path=filepath
     )
 
-    ftp.create_dirs()
+    os.makedirs(ftp.full_dest, exist_ok=True)
     new_filepath = ftp.move()
 
     if args.verbose:

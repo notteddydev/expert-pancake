@@ -63,21 +63,6 @@ class FileToProcess:
 
         return time.strftime("%Y", self.modified_dt_object)
 
-    def create_dirs(self) -> None:
-        """
-        If any of the subdirectories in self.full_dest do not exist, make them.
-        """
-        relative_path = os.path.relpath(self.full_dest, self.dest)
-        dirnames = relative_path.split(os.sep)
-        mkdirs = [
-            os.path.join(self.dest, *dirnames[:i])
-            for i in range(1, len(dirnames) + 1)
-        ]
-
-        for mkdir in mkdirs:
-            if not os.path.isdir(mkdir):
-                os.mkdir(mkdir)
-
     def move(self) -> str:
         """
         Move the existing file from its original path to self.new_path.
