@@ -8,7 +8,7 @@ import argparse
 import functions
 import os
 from dotenv import load_dotenv
-from file_to_process import FileToProcess
+from process_file import ProcessFile
 from pathlib import Path
 from send2trash import send2trash
 
@@ -61,17 +61,17 @@ for filepath in args.origin.rglob("*"):
         paths_to_trash.add(filepath)
         continue
 
-    ftp = FileToProcess(
+    Process = ProcessFile(
         dest=args.destination,
         exts_to_filetypes=reversed_mappings,
         og_path=filepath
     )
 
-    os.makedirs(ftp.full_dest, exist_ok=True)
-    new_filepath = ftp.move()
+    os.makedirs(Process.full_dest, exist_ok=True)
+    new_filepath = Process()
 
     if args.verbose:
-        print(f"{ftp.og_path} -> {new_filepath}")
+        print(f"{Process.og_path} -> {new_filepath}")
 
 if args.verbose and paths_to_trash:
     print("\nTrashing folders...\n")
