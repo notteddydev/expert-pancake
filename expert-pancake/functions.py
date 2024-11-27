@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from settings import EXT_MAPPINGS_FILE
+from settings import EXT_MAPPINGS_FILE, IGNORE
 from typing import List
 
 
@@ -23,13 +23,17 @@ def request_filetype_for_ext(ext: str, filetypes: List) -> str:
     """
     choices = "\n".join([f"{i}: {type}" for i, type in enumerate(filetypes)])
     chosen_index = int(input(f"""Please specify to which type the ext, '{ext}'\
-, belongs by typing in the corresponding number.\n\n{choices}\n"""))
+, belongs by typing in the corresponding number. If you do not consider '{ext}\
+' to be a valid extension, select {IGNORE}.\n\n{choices}\n"""))
     valid_choice = 0 <= chosen_index < len(filetypes)
 
     if valid_choice:
         filetype = filetypes[chosen_index]
-        correct_question = f"\nExtension: '{ext}' will identify with: \
-            '{filetype}'. Is that correct? Y/N\n"
+        if filetype == IGNORE:
+            statement = f"'{ext}' will identify as an invalid extension"
+        else:
+            statement = f"Extension: '{ext}' will identify with: '{filetype}'"
+        correct_question = f"\n{statement}. Is that correct? Y/N\n"
         correct = str(input(correct_question)).lower() == "y"
 
         if correct:
@@ -61,7 +65,7 @@ def update_ext_mappings(origin: Path) -> None:
         if not ext or ext in recognised_exts:
             continue
 
-        filetype = request_filetype_for_ext(ext, ext_mappings.keys())
+        filetype = request_filetype_for_ext(ext, list(ext_mappings.keys()))
         ext_mappings[filetype].append(ext)
         recognised_exts.append(ext)
 

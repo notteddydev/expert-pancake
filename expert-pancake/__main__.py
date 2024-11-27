@@ -8,6 +8,8 @@ import argparse
 import functions
 import os
 from dotenv import load_dotenv
+from exceptions import DirNotEmptyError, InvalidExtensionError, \
+    NoExtensionError
 from process_file import ProcessFile
 from pathlib import Path
 from send2trash import send2trash
@@ -55,30 +57,52 @@ reversed_mappings = {
 if args.verbose:
     print("\nMoving files...\n")
 
-paths_to_trash = set()
+errors = {}
+dirs = set()
 for filepath in args.origin.rglob("*"):
-    if os.path.isdir(filepath):
-        paths_to_trash.add(filepath)
-        continue
+    try:
+        Process = ProcessFile(
+            dest=args.destination,
+            exts_to_filetypes=reversed_mappings,
+            og_path=filepath
+        )
+    except (InvalidExtensionError, NoExtensionError) as ex1:
+        if os.path.isdir(filepath):
+            dirs.add(filepath)
+        else:
+            errors[filepath] = str(ex1)
+    else:
+        try:
+            os.makedirs(Process.full_dest, exist_ok=True)
+        except OSError as ex2:
+            errors[filepath] = str(ex2)
+        else:
+            try:
+                new_filepath = Process()
+            except FileNotFoundError as ex3:
+                errors[filepath] = str(ex3)
+            else:
+                if args.verbose:
+                    print(f"{Process.og_path} -> {new_filepath}")
 
-    Process = ProcessFile(
-        dest=args.destination,
-        exts_to_filetypes=reversed_mappings,
-        og_path=filepath
-    )
-
-    os.makedirs(Process.full_dest, exist_ok=True)
-    new_filepath = Process()
-
+if dirs:
     if args.verbose:
-        print(f"{Process.og_path} -> {new_filepath}")
+        print("\nTrashing directories...\n")
 
-if args.verbose and paths_to_trash:
-    print("\nTrashing folders...\n")
+    for dir_path in dirs:
+        try:
+            if os.listdir(dir_path):
+                raise DirNotEmptyError("Directory not empty.")
+            else:
+                send2trash(dir_path)
+        except OSError as ex4:
+            errors[dir_path] = str(ex4)
+        else:
+            if args.verbose:
+                print(f"{dir_path} trashed.")
 
-for path_to_trash in paths_to_trash:
-    if os.path.isdir(path_to_trash) and not os.listdir(path_to_trash):
-        send2trash(path_to_trash)
-
-        if args.verbose:
-            print(f"{path_to_trash} trashed.")
+if errors:
+    print("\n!!!! ==== Errors ==== !!!!\n")
+    print("Error processing the following paths:")
+    for filepath, exception in errors.items():
+        print(f"{filepath} not processed due to exception: {exception}")

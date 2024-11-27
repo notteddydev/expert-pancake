@@ -1,6 +1,13 @@
 {
     "documents": [
+        ".odt",
         ".pdf"
+    ],
+    "ignore": [
+        ".18",
+        ".27",
+        ".50",
+        ".57"
     ],
     "photos": [
         ".jpeg",
@@ -9,9 +16,11 @@
         ".webp"
     ],
     "recordings": [
+        ".m4a",
         ".mp3"
     ],
     "videos": [
+        ".gif",
         ".mov",
         ".mp4"
     ]

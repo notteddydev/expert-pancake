@@ -2,6 +2,7 @@
     "documents": [
         ".pdf"
     ],
+    "ignore": [],
     "photos": [
         ".jpg",
         ".png"
