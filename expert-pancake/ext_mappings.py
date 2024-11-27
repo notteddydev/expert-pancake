@@ -5,7 +5,7 @@ from settings import EXT_MAPPINGS_FILE, IGNORE
 from typing import List
 
 
-def get_ext_mappings() -> dict:
+def get_ext_mappings(inverted=False) -> dict:
     """
     Retrieves the filetypes -> extensions mappings from the extensions.json
     file and returns them as a dictionary.
@@ -13,7 +13,14 @@ def get_ext_mappings() -> dict:
     with open(EXT_MAPPINGS_FILE, "r") as file:
         ext_mappings = json.load(file)
 
-    return ext_mappings
+    if inverted:
+        return {
+            ext: file_type
+            for file_type, exts in ext_mappings.items()
+            for ext in exts
+        }
+    else:
+        return ext_mappings
 
 
 def request_filetype_for_ext(ext: str, filetypes: List) -> str:
