@@ -5,18 +5,21 @@ destination under the folder structure:
 """
 
 import os
+import re
+import time
 from cli_args import exit_if_args_invalid, get_args
-from exceptions import DirNotEmptyError, InvalidExtensionError, \
-    NoExtensionError
+from exceptions import DirNotEmptyError
 from ext_mappings import get_ext_mappings, update_ext_mappings
-from process_file import ProcessFile
+from helpers import get_modified_dt_obj, get_dest_filename, process_file
 from send2trash import send2trash
+from shutil import copy2, move
+from settings import IGNORE, YMD_PATTERN
 
 args = get_args(docstring=__doc__)
 exit_if_args_invalid(cli_args=args)
 
 update_ext_mappings(args.origin)
-inverted_mappings = get_ext_mappings(inverted=True)
+filetypes_to_exts = get_ext_mappings(inverted=True)
 
 if args.verbose:
     print("\nMoving files...\n")
@@ -27,41 +30,59 @@ errors = {
     "file": {},
 }
 dirs = set()
-for filepath in args.origin.rglob("*"):
-    try:
-        Process = ProcessFile(
-            copyto_dest=args.copyto,
-            dest=args.destination,
-            exts_to_filetypes=inverted_mappings,
-            original_path=filepath,
-        )
-    except (InvalidExtensionError, NoExtensionError) as ex1:
-        if os.path.isdir(filepath):
-            dirs.add(filepath)
+for src_filepath in args.origin.rglob("*"):
+    original_filename = os.path.basename(src_filepath)
+    original_stem, ext = os.path.splitext(original_filename)
+
+    if not ext:
+        if os.path.isdir(src_filepath):
+            dirs.add(src_filepath)
         else:
-            errors["file"][filepath] = str(ex1)
+            errors["file"][src_filepath] = "No extension found."
+        continue
+
+    filetype = filetypes_to_exts[ext.lower()]
+    if filetype == IGNORE:
+        errors["file"][src_filepath] = "Extension invalid."
+        continue
+
+    modified_dt_obj = get_modified_dt_obj(src_filepath)
+    ymd_match = re.match(YMD_PATTERN, original_stem)
+    if ymd_match:
+        year = ymd_match.group("year")
     else:
+        year = time.strftime("%Y", modified_dt_obj)
+    relative_dir = os.path.join(year, filetype)
+    dest_filename = get_dest_filename(filetype=filetype,
+                                      original_stem=original_stem,
+                                      modified_dt_obj=modified_dt_obj,
+                                      ymd_match=ymd_match,
+                                      dest=args.destination,
+                                      relative_dir=relative_dir,
+                                      ext=ext)
+
+    try:
+        moved_to = process_file(src_filepath=src_filepath,
+                                dest_filename=dest_filename,
+                                relative_dir=relative_dir,
+                                dest_parent=args.destination,
+                                fn=move,
+                                verbose="Moved")
+    except (OSError, FileNotFoundError) as ex:
+        errors["file"][src_filepath] = str(ex)
+        continue
+
+    if args.copydestination is not None:
         try:
-            Process.make_dirs()
-        except OSError as ex2:
-            errors["file"][filepath] = str(ex2)
-        else:
-            try:
-                new_filepath = Process.move()
-            except FileNotFoundError as ex3:
-                errors["file"][filepath] = str(ex3)
-            else:
-                if args.verbose:
-                    print(f"Moved: {Process.original_path} -> {new_filepath}")
-                if Process.copyto_dest is not None:
-                    try:
-                        Process.copy()
-                    except (OSError, ValueError) as ex4:
-                        errors["copy"][new_filepath] = str(ex4)
-                    else:
-                        if args.verbose:
-                            print(f"Copied: {new_filepath} -> \
-{Process.filepath_for_copy}")
+            copied_to = process_file(src_filepath=moved_to,
+                                     dest_filename=dest_filename,
+                                     relative_dir=relative_dir,
+                                     dest_parent=args.copydestination,
+                                     fn=copy2,
+                                     verbose="Copied")
+        except OSError as ex:
+            errors["copy"][moved_to] = str(ex)
+            continue
 
 if dirs:
     if args.verbose:
@@ -73,8 +94,8 @@ if dirs:
                 raise DirNotEmptyError("Directory not empty.")
             else:
                 send2trash(dir_path)
-        except OSError as ex5:
-            errors["directory"][dir_path] = str(ex5)
+        except OSError as ex:
+            errors["directory"][dir_path] = str(ex)
         else:
             if args.verbose:
                 print(f"{dir_path} trashed.")

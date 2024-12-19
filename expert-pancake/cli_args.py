@@ -8,8 +8,8 @@ def exit_if_args_invalid(cli_args):
     
     """
     must_exist_dirs = ["destination", "origin"]
-    if cli_args.copyto is not None:
-        must_exist_dirs.append("copyto")
+    if cli_args.copydestination is not None:
+        must_exist_dirs.append("copydestination")
 
     for args_attr in must_exist_dirs:
         if not os.path.isdir(getattr(cli_args, args_attr)):
@@ -31,7 +31,7 @@ def get_args(docstring=None):
                         required=True,
                         type=Path,
                         )
-    parser.add_argument("-c", "--copyto",
+    parser.add_argument("-c", "--copydestination",
                         default=None,
                         help="The directory to save copies to.",
                         required=False,
