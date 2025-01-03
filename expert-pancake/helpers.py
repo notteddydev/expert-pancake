@@ -64,13 +64,13 @@ def get_unique_stem(dest, relative_dir, proposed_stem, ext):
     is returned.
     """
     stem = proposed_stem
-    dest = f"{os.path.join(dest, relative_dir, stem)}{ext}"
+    filepath = f"{os.path.join(dest, relative_dir, stem)}{ext}"
     duplicate_count = 1
 
-    while os.path.exists(dest):
+    while os.path.exists(filepath):
         stem = f"{proposed_stem}-{duplicate_count}"
         joined = os.path.join(dest, relative_dir, stem)
-        dest = f"{joined}{ext}"
+        filepath = f"{joined}{ext}"
         duplicate_count += 1
 
     return stem
